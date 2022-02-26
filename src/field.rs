@@ -65,18 +65,20 @@ impl Field {
 
         match direction {
             Direction::Left => {
-                &self.boxes[current - 1].selected = true;
+                self.boxes[current - 1].selected = true;
             },
             Direction::Down => {
-                &self.boxes[current + 3].selected = true;
+                self.boxes[current + 3].selected = true;
             },
             Direction::Up => {
-                &self.boxes[current - 3].selected = true;
+                self.boxes[current - 3].selected = true;
             },
             Direction::Right => {
-                &self.boxes[current + 1].selected = true;
+                self.boxes[current + 1].selected = true;
             },
         }
+
+        self.boxes[current].selected = false;
     }
 
     pub fn print(&self) {

@@ -8,7 +8,7 @@ use termion::input::TermRead;
 use termion::raw::{IntoRawMode};
 
 fn main() {
-    let field = field::Field::new();
+    let mut field = field::Field::new();
 
     let stdin = stdin();
     let mut stdout = stdout().into_raw_mode().unwrap();
