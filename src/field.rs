@@ -60,30 +60,23 @@ impl Field {
         &self.boxes[index]
     }
 
-    pub fn move_selected(&self, direction: Direction) {
+    pub fn move_selected(&mut self, direction: Direction) {
         let current = self.boxes.iter().position(|b| b.selected).unwrap();
 
-        // match direction {
-        //     Direction::Left => {
-        //         &self.boxes[current - 1].selected = &true;
-        //     },
-        //     Direction::Down => {
-        //         &self.boxes[current + 3].selected = &true;
-        //     },
-        //     Direction::Up => {
-        //         &self.boxes[current - 3].selected = &true;
-        //     },
-        //     Direction::Right => {
-        //         &self.boxes[current + 1].selected = &true;
-        //     },
-        // }
-
-        // let boxik = self.boxes.get(current).unwrap();
-        &self.boxes[current] = &Box{content: BoxContent::Empty, selected: false};
-
-        // let mut boxik = &self.boxes[current];
-        // boxik.selected = false;
-        // println!("Box: {}", &self.boxes[current].selected);
+        match direction {
+            Direction::Left => {
+                &self.boxes[current - 1].selected = true;
+            },
+            Direction::Down => {
+                &self.boxes[current + 3].selected = true;
+            },
+            Direction::Up => {
+                &self.boxes[current - 3].selected = true;
+            },
+            Direction::Right => {
+                &self.boxes[current + 1].selected = true;
+            },
+        }
     }
 
     pub fn print(&self) {
