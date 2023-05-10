@@ -1,10 +1,17 @@
-use std::fmt::{Formatter, Display, Result};
-use terminal_size::{terminal_size};
+use std::fmt::{Display, Formatter, Result};
+use terminal_size::terminal_size;
 
+#[derive(Clone, Copy)]
 enum BoxContent {
     Empty,
     X,
     O,
+}
+
+#[derive(Clone, Copy)]
+pub enum Turn {
+    Player,
+    Computer
 }
 
 impl Display for BoxContent {
@@ -17,19 +24,14 @@ impl Display for BoxContent {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct Box {
     content: BoxContent,
-    selected: bool,
-}
-
-impl Box {
-    pub fn format() -> String {
-        String::from("")
-    }
 }
 
 pub struct Field {
     boxes: [Box; 9],
+    selected: i32,
 }
 
 pub enum Direction {
@@ -42,48 +44,40 @@ pub enum Direction {
 impl Field {
     pub fn new() -> Field {
         Field {
-            boxes: [
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: true},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-                Box{content: BoxContent::Empty, selected: false},
-            ],
+            boxes: [Box {
+                content: BoxContent::Empty,
+            }; 9],
+            selected: 4,
         }
-    }
-
-    pub fn get_box(&self, index: usize) -> &Box {
-        &self.boxes[index]
     }
 
     pub fn move_selected(&mut self, direction: Direction) {
-        let current = self.boxes.iter().position(|b| b.selected).unwrap();
-
         match direction {
             Direction::Left => {
-                self.boxes[current - 1].selected = true;
-            },
+                if self.selected - 1 >= 0 && self.selected % 3 != 0 {
+                    self.selected -= 1;
+                }
+            }
             Direction::Down => {
-                self.boxes[current + 3].selected = true;
-            },
+                if self.selected + 3 < 9 {
+                    self.selected += 3;
+                }
+            }
             Direction::Up => {
-                self.boxes[current - 3].selected = true;
-            },
+                if self.selected - 3 >= 0 {
+                    self.selected -= 3;
+                }
+            }
             Direction::Right => {
-                self.boxes[current + 1].selected = true;
-            },
+                if self.selected + 1 < 9 && self.selected % 3 != 2 {
+                    self.selected += 1;
+                }
+            }
         }
-
-        self.boxes[current].selected = false;
     }
 
     pub fn print(&self) {
-        let (width, height) = terminal_size().unwrap();
-        println!("term size: {}:{}", width.0, height.0);
+        let (width, _) = terminal_size().unwrap();
         let mut output: String = String::from("");
 
         for row in 0..3 {
@@ -95,19 +89,41 @@ impl Field {
                 output.push_str(" ");
             }
 
-            if left_box.selected {
-                output.push_str(format!("> {} < {} | {} |", left_box.content, middle_box.content, right_box.content).as_str());
-            }
-            else if middle_box.selected {
-                output.push_str(format!("| {} > {} < {} |", left_box.content, middle_box.content, right_box.content).as_str());
-            }
-            else if right_box.selected {
-                output.push_str(format!("| {} | {} > {} <", left_box.content, middle_box.content, right_box.content).as_str());
-            }
-            else {
-                output.push_str(format!("| {} | {} | {} |", left_box.content, middle_box.content, right_box.content).as_str());
+            if self.selected == (row * 3) as i32 {
+                output.push_str(
+                    format!(
+                        "[ {} ] {} | {} |",
+                        left_box.content, middle_box.content, right_box.content
+                    )
+                    .as_str(),
+                );
+            } else if self.selected == (row * 3 + 1) as i32 {
+                output.push_str(
+                    format!(
+                        "| {} [ {} ] {} |",
+                        left_box.content, middle_box.content, right_box.content
+                    )
+                    .as_str(),
+                );
+            } else if self.selected == (row * 3 + 2) as i32 {
+                output.push_str(
+                    format!(
+                        "| {} | {} [ {} ]",
+                        left_box.content, middle_box.content, right_box.content
+                    )
+                    .as_str(),
+                );
+            } else {
+                output.push_str(
+                    format!(
+                        "| {} | {} | {} |",
+                        left_box.content, middle_box.content, right_box.content
+                    )
+                    .as_str(),
+                );
             }
 
+            // 13 is width if text
             for _ in 0..((width.0 - 13) / 2) {
                 output.push_str(" ");
             }
