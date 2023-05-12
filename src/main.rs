@@ -2,18 +2,15 @@ extern crate core;
 
 mod field;
 
-use field::{Field, Turn};
+use field::{BoxContent, Direction, Field, Turn};
 use std::io::{stdin, stdout, Write};
 use std::process::exit;
-use std::thread::sleep;
-use std::time::Duration;
 use termion::event::Key;
 use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 fn main() {
     let mut field = Field::new();
-    let mut turn = Turn::Player;
 
     let stdin = stdin();
     let mut stdout = stdout().into_raw_mode().unwrap();
@@ -36,21 +33,11 @@ fn main() {
                 stdout.flush().unwrap();
                 exit(0);
             }
-            Key::Char('a') | Key::Char('h') | Key::Left => {
-                field.move_selected(field::Direction::Left)
-            }
-            Key::Char('s') | Key::Char('j') | Key::Down => {
-                field.move_selected(field::Direction::Down)
-            }
-            Key::Char('w') | Key::Char('k') | Key::Up => field.move_selected(field::Direction::Up),
-            Key::Char('d') | Key::Char('l') | Key::Right => {
-                field.move_selected(field::Direction::Right)
-            }
-            Key::Char(' ') | Key::Char('\n') => {
-                if let Turn::Computer = turn {
-                    continue;
-                }
-            }
+            Key::Char('a') | Key::Char('h') | Key::Left => field.move_selected(Direction::Left),
+            Key::Char('s') | Key::Char('j') | Key::Down => field.move_selected(Direction::Down),
+            Key::Char('w') | Key::Char('k') | Key::Up => field.move_selected(Direction::Up),
+            Key::Char('d') | Key::Char('l') | Key::Right => field.move_selected(Direction::Right),
+            Key::Char(' ') | Key::Char('\n') => field.flag(),
             _ => (),
         }
 

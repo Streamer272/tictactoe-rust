@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter, Result};
 use terminal_size::terminal_size;
 
-#[derive(Clone, Copy)]
-enum BoxContent {
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum BoxContent {
     Empty,
     X,
     O,
@@ -11,7 +11,7 @@ enum BoxContent {
 #[derive(Clone, Copy)]
 pub enum Turn {
     Player,
-    Computer
+    Computer,
 }
 
 impl Display for BoxContent {
@@ -26,12 +26,7 @@ impl Display for BoxContent {
 
 #[derive(Clone, Copy)]
 pub struct Box {
-    content: BoxContent,
-}
-
-pub struct Field {
-    boxes: [Box; 9],
-    selected: i32,
+    pub content: BoxContent,
 }
 
 pub enum Direction {
@@ -39,6 +34,11 @@ pub enum Direction {
     Down,
     Up,
     Right,
+}
+
+pub struct Field {
+    boxes: [Box; 9],
+    selected: i32,
 }
 
 impl Field {
@@ -130,5 +130,17 @@ impl Field {
         }
 
         print!("\r{}$ ", &output)
+    }
+
+    pub fn selected(&self) -> Box {
+        return self.boxes[self.selected as usize];
+    }
+
+    pub fn flag(&mut self) {
+        if self.selected().content != BoxContent::Empty {
+            return;
+        }
+
+        self.selected().content = BoxContent::X;
     }
 }
