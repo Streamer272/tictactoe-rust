@@ -2,7 +2,7 @@ extern crate core;
 
 mod field;
 
-use field::{BoxContent, Direction, Field, Turn};
+use field::{Direction, Field};
 use std::io::{stdin, stdout, Write};
 use std::process::exit;
 use termion::event::Key;

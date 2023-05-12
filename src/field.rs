@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::fmt::{Display, Formatter, Result};
 use terminal_size::terminal_size;
 
@@ -132,15 +133,35 @@ impl Field {
         print!("\r{}$ ", &output)
     }
 
-    pub fn selected(&self) -> Box {
-        return self.boxes[self.selected as usize];
-    }
-
     pub fn flag(&mut self) {
-        if self.selected().content != BoxContent::Empty {
+        if self.boxes[self.selected as usize].content != BoxContent::Empty {
             return;
         }
 
-        self.selected().content = BoxContent::X;
+        self.boxes[self.selected as usize].content = BoxContent::X;
+        self.robot_move()
+    }
+
+    fn robot_move(&mut self) {
+        let mut index = 0;
+        let empty: Vec<i32> = self
+            .boxes
+            .into_iter()
+            .filter_map(|b| {
+                index += 1;
+                if b.content == BoxContent::Empty {
+                    return Some(index - 1);
+                }
+                None
+            })
+            .collect();
+        if empty.len() == 0 {
+            return;
+        }
+
+        let mut random = rand::thread_rng().gen::<u8>();
+        random = random % (empty.len() as u8);
+        let box_index = empty[random as usize];
+        self.boxes[box_index as usize].content = BoxContent::O;
     }
 }
